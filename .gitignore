@@ -1,2 +1,5 @@
 *.pt
 runs/
+dataset/
+output/
+__pycache__/

@@ -1,3 +1,4 @@
+ipykernel
 pyspellchecker
 
 tqdm
@@ -20,3 +21,14 @@ huggingface_hub>=0.20.0,<1.0.0
 defusedxml>=0.7.0
 anyascii>=0.3.2
 tqdm>=4.30.0
+
+python-doctr
+torch
+torchvision
+IProgress
+mplcursors
+tensorboard
+reportlab
+
+ocrmypdf
+PyPDF2

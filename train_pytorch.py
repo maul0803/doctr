@@ -525,7 +525,7 @@ def main(args):
     
     
     #ADDED MODIFIED
-    writer = SummaryWriter(log_dir='runs/train')  # Remplacer 'experiment_name' par ton nom d'expérience
+    writer = SummaryWriter(log_dir='runs')  # Remplacer 'experiment_name' par ton nom d'expérience
     for epoch in range(args.epochs):
         # Boucle d'entraînement
         train_loss, actual_lr = fit_one_epoch(

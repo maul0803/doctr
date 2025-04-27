@@ -1,0 +1,13 @@
+python train_pytorch.py vitstr_small \
+  --train_path dataset/train \
+  --val_path dataset/validation \
+  --epochs 30 \
+  --batch_size 10 \
+  --pretrained \
+  --optim adamw \
+  --sched cosine \
+  --amp \
+  --workers 8 \
+  --early-stop \
+  --early-stop-epochs 30 \
+  --vocab english \
