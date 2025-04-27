@@ -1,3 +1,5 @@
+pyspellchecker
+
 tqdm
 slack-sdk
 wandb>=0.10.31

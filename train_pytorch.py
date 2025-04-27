@@ -6,7 +6,7 @@
 import os
 
 os.environ["USE_TORCH"] = "1"
-
+from torch.utils.tensorboard import SummaryWriter
 import datetime
 import hashlib
 import logging
@@ -520,24 +520,47 @@ def main(args):
     # Training loop
     if args.early_stop:
         early_stopper = EarlyStopper(patience=args.early_stop_epochs, min_delta=args.early_stop_delta)
+    
+    
+    
+    
+    #ADDED MODIFIED
+    writer = SummaryWriter(log_dir='runs/train')  # Remplacer 'experiment_name' par ton nom d'expérience
     for epoch in range(args.epochs):
+        # Boucle d'entraînement
         train_loss, actual_lr = fit_one_epoch(
             model, train_loader, batch_transforms, optimizer, scheduler, amp=args.amp, log=log_at_step
         )
         pbar.write(f"Epoch {epoch + 1}/{args.epochs} - Training loss: {train_loss:.6} | LR: {actual_lr:.6}")
 
-        # Validation loop at the end of each epoch
+        # Enregistrer la perte d'entraînement dans TensorBoard
+        writer.add_scalar('Loss/Train', train_loss, epoch)
+        writer.add_scalar('LearningRate/', actual_lr, epoch)
+
+        # Boucle de validation à la fin de chaque époque
         val_loss, exact_match, partial_match = evaluate(
             model, val_loader, batch_transforms, val_metric, amp=args.amp, log=log_at_step
         )
+        pbar.write(f"Validation loss: {val_loss:.6} | Exact match: {exact_match:.2f} | Partial match: {partial_match:.2f}")
+
+        # Enregistrer la perte de validation dans TensorBoard
+        writer.add_scalar('Loss/Validation', val_loss, epoch)
+
+        # Sauvegarder le modèle si la perte de validation a diminué
         if val_loss < min_loss:
             pbar.write(f"Validation loss decreased {min_loss:.6} --> {val_loss:.6}: saving state...")
             torch.save(model.state_dict(), Path(args.output_dir) / f"{exp_name}.pt")
             min_loss = val_loss
+        
+        
+        
+        
+        
         pbar.write(
             f"Epoch {epoch + 1}/{args.epochs} - Validation loss: {val_loss:.6} "
             f"(Exact: {exact_match:.2%} | Partial: {partial_match:.2%})"
         )
+
         # W&B
         if args.wb:
             wandb.log({
@@ -562,6 +585,13 @@ def main(args):
         if args.early_stop and early_stopper.early_stop(val_loss):
             pbar.write("Training halted early due to reaching patience limit.")
             break
+
+
+
+
+    writer.close() #ADDED
+
+
 
     if args.wb:
         run.finish()
